@@ -28,7 +28,7 @@
 
         #gameContainer {
             position: relative;
-            width: 800px; /* TamaÒo fijo para el lienzo */
+            width: 800px; /* Tama√±o fijo para el lienzo */
             height: 600px;
             margin: 20px;
         }
@@ -163,7 +163,7 @@
             font-weight: bold;
         }
         
-        /* Estilos especÌficos para el Panel de EstadÌsticas en la Pausa (Creative Mode) */
+        /* Estilos espec√≠ficos para el Panel de Estad√≠sticas en la Pausa (Creative Mode) */
         #statControlPanelGrid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -237,20 +237,20 @@
             <div class="stats">Salud: <span id="healthValue">100/100</span></div> 
             <div class="stats">Puntaje: <span id="score">0</span></div>
             <div class="stats">Nivel: <span id="level">1</span></div>
-            <div class="stats">EnergÌa: <span id="energy">100/100</span></div>
+            <div class="stats">Energ√≠a: <span id="energy">100/100</span></div>
         </div>
 
         <div id="menuScreen" class="screen">
             <h1>GRAVITY SLICER: MULTIVERSE CONVERGENCE</h1>
             <div class="instructions">
-                <p>Corta el espacio-tiempo, manipula la gravedad y recolecta energÌa cu·ntica.</p>
-                <p>°Destruye a los entidades dimensionales antes de que colapsen tu realidad!</p>
+                <p>Corta el espacio-tiempo, manipula la gravedad y recolecta energ√≠a cu√°ntica.</p>
+                <p>¬°Destruye a los entidades dimensionales antes de que colapsen tu realidad!</p>
             </div>
             <div class="controls">
                 <div class="control-item">Movimiento: WASD o Flechas</div>
-                <div class="control-item">Campo de Gravedad: Click Izquierdo (consume 20 EnergÌa)</div>
-                <div class="control-item">Corte Espacial: Click Derecho (consume 15 EnergÌa)</div>
-                <div class="control-item" style="color: #b4ffb4; border-color: #b4ffb4;">Campo de CuraciÛn/RepulsiÛn: **Q** (consume 75 EnergÌa)</div>
+                <div class="control-item">Campo de Gravedad: Click Izquierdo (consume 20 Energ√≠a)</div>
+                <div class="control-item">Corte Espacial: Click Derecho (consume 15 Energ√≠a)</div>
+                <div class="control-item" style="color: #b4ffb4; border-color: #b4ffb4;">Campo de Curaci√≥n/Repulsi√≥n: **Q** (consume 75 Energ√≠a)</div>
                 <div class="control-item">Pausa: P</div>
             </div>
             <button onclick="game.startGame('normal')">INICIAR JUEGO (NORMAL)</button>
@@ -263,11 +263,11 @@
             
             <div class="instructions">
                 <p style="color: #00b4d8; font-weight: bold; font-size: 1.1em; margin-bottom: 15px;">
-                    °Modo Creativo Activado!
+                    ¬°Modo Creativo Activado!
                 </p>
-                <p>El juego comenzar· con recursos casi infinitos y velocidad alta.
+                <p>El juego comenzar√° con recursos casi infinitos y velocidad alta.
                     <br>
-                    Presiona **P** (Pausa) en cualquier momento para modificar las estadÌsticas en **tiempo real**.
+                    Presiona **P** (Pausa) en cualquier momento para modificar las estad√≠sticas en **tiempo real**.
                 </p>
             </div>
 
@@ -276,18 +276,18 @@
 
         <div id="levelUpScreen" class="screen hidden">
             <h2>MEJORA DE REALIDAD</h2>
-            <p style="margin-bottom: 25px; color: #4cc9f0;">°Nivel M˙ltiplo de 3/5 Completado! Elige tu mejora para continuar:</p>
+            <p style="margin-bottom: 25px; color: #4cc9f0;">¬°Nivel M√∫ltiplo de 3/5 Completado! Elige tu mejora para continuar:</p>
             <button id="boostHealth">VIDA (+30 Max Salud)</button>
             <button id="boostSpeed">VELOCIDAD (+2 al Movimiento)</button>
-            <button id="boostEnergy">ENERGÕA (+50 Max EnergÌa)</button>
+            <button id="boostEnergy">ENERG√çA (+50 Max Energ√≠a)</button>
         </div>
 
         <div id="gameOverScreen" class="screen hidden">
             <h2>REALIDAD COLAPSADA</h2>
-            <div class="stats">PuntuaciÛn Final: <span id="finalScore">0</span></div>
-            <div class="stats">Mejor PuntuaciÛn: <span id="highScore">0</span></div>
+            <div class="stats">Puntuaci√≥n Final: <span id="finalScore">0</span></div>
+            <div class="stats">Mejor Puntuaci√≥n: <span id="highScore">0</span></div>
             <button id="restartButton">REINTENTAR</button>
-            <button id="menuButton">MEN⁄</button>
+            <button id="menuButton">MEN√ö</button>
         </div>
 
         <div id="pauseScreen" class="screen hidden">
@@ -300,12 +300,12 @@
                 <div id="statControlPanelGrid">
                     
                     <div class="stat-group">
-                        <label for="maxHealthRT">Vida M·xima: <span id="valHealthRT">9999</span></label>
+                        <label for="maxHealthRT">Vida M√°xima: <span id="valHealthRT">9999</span></label>
                         <input type="range" id="maxHealthRT" min="10" max="10000" value="9999" oninput="game.updateRealTimeStats(this)">
                     </div>
                     
                     <div class="stat-group">
-                        <label for="maxEnergyRT">EnergÌa M·xima: <span id="valEnergyRT">9999</span></label>
+                        <label for="maxEnergyRT">Energ√≠a M√°xima: <span id="valEnergyRT">9999</span></label>
                         <input type="range" id="maxEnergyRT" min="50" max="10000" value="9999" oninput="game.updateRealTimeStats(this)">
                     </div>
                     
@@ -329,11 +329,11 @@
                 </div>
                 <div class="instructions" style="max-width: 650px; margin-top: 20px;">
                     <p style="color: #aaa; font-size: 0.9em; line-height: 1.5;">
-                        **Controles R·pidos (Fuera de Pausa):**
+                        **Controles R√°pidos (Fuera de Pausa):**
                         <br>
-                        Generar Entidad (Normal/R·pida/Pesada/Cuadrada): **1 / 2 / 3 / 4** (en la posiciÛn del cursor).
+                        Generar Entidad (Normal/R√°pida/Pesada/Cuadrada): **1 / 2 / 3 / 4** (en la posici√≥n del cursor).
                         <br>
-                        Generar Punto de EnergÌa: **9** | Generar Punto de Vida: **0** (en la posiciÛn del cursor).
+                        Generar Punto de Energ√≠a: **9** | Generar Punto de Vida: **0** (en la posici√≥n del cursor).
                         <br>
                         Borrar Todo (Entidades y Campos): **R**.
                     </p>
@@ -341,7 +341,7 @@
             </div>
 
             <button id="resumeButton">CONTINUAR</button>
-            <button id="pauseMenuButton">MEN⁄</button>
+            <button id="pauseMenuButton">MEN√ö</button>
         </div>
     </div>
 
@@ -349,7 +349,7 @@
 
     <script>
         /* ========================================================= */
-        /* JAVASCRIPT (LÛgica del Juego y Ajustes de Dificultad) */
+        /* JAVASCRIPT (L√≥gica del Juego y Ajustes de Dificultad) */
         /* ========================================================= */
         class Game {
             constructor() {
@@ -373,7 +373,7 @@
                 // ESTADOS DE INVULNERABILIDAD
                 this.isInvulnerableManual = false; 
                 
-                // --- PROPIEDADES DEL CAMPO DE CURACI”N (ESCUDO Q) ---
+                // --- PROPIEDADES DEL CAMPO DE CURACI√ìN (ESCUDO Q) ---
                 this.isHealingFieldActive = false;
                 this.healingFieldLocation = {x: 0, y: 0};
                 this.healingFieldTimer = 0;
@@ -399,7 +399,7 @@
                 this.waveInterval = 5000;
                 this.particleSpawnTimer = 0;
                 this.customCursor = document.getElementById('customCursor');
-                this.animationFrameId = null; // ID para controlar el bucle de animaciÛn
+                this.animationFrameId = null; // ID para controlar el bucle de animaci√≥n
 
                 this.player = {
                     x: this.canvas.width / 2,
@@ -611,7 +611,7 @@
                 this.gameMode = mode; 
                 this.isInvulnerableManual = false; 
                 
-                // --- INICIALIZACI”N DE ESTADÕSTICAS SEG⁄N EL MODO ---
+                // --- INICIALIZACI√ìN DE ESTAD√çSTICAS SEG√öN EL MODO ---
                 if (this.gameMode === 'creative') {
                     // Valores iniciales altos para el modo creativo
                     this.level = 50;
@@ -679,7 +679,7 @@
                 if (this.gameState === 'playing') {
                     this.gameState = 'paused';
                     
-                    // CORRECCI”N CRÕTICA: Detener el bucle de animaciÛn de inmediato
+                    // CORRECCI√ìN CR√çTICA: Detener el bucle de animaci√≥n de inmediato
                     if (this.animationFrameId) {
                         cancelAnimationFrame(this.animationFrameId);
                         this.animationFrameId = null;
@@ -725,7 +725,7 @@
                     
                     this.gameState = 'playing';
                     document.getElementById('pauseScreen').classList.add('hidden');
-                    this.lastTime = performance.now(); // FIX: Resetear el tiempo para evitar el salto supersÛnico
+                    this.lastTime = performance.now(); // FIX: Resetear el tiempo para evitar el salto supers√≥nico
                     this.gameLoop(); // Reiniciar el loop
                 }
             }
@@ -800,7 +800,7 @@
 
             showMenu() {
                 this.gameState = 'menu';
-                // Detener el bucle de animaciÛn
+                // Detener el bucle de animaci√≥n
                 if (this.animationFrameId) {
                     cancelAnimationFrame(this.animationFrameId);
                     this.animationFrameId = null;
@@ -819,7 +819,7 @@
                 document.getElementById('finalScore').textContent = this.score;
                 document.getElementById('highScore').textContent = this.highScore;
                 document.getElementById('gameOverScreen').classList.remove('hidden');
-                // Detener el bucle de animaciÛn
+                // Detener el bucle de animaci√≥n
                 if (this.animationFrameId) {
                     cancelAnimationFrame(this.animationFrameId);
                     this.animationFrameId = null;
@@ -827,7 +827,7 @@
             }
 
             takeDamage(amount) {
-                // Si est· en modo manual o es temporalmente invulnerable, no recibe daÒo
+                // Si est√° en modo manual o es temporalmente invulnerable, no recibe da√±o
                 if (this.isInvulnerableManual || this.player.invulnerableTimer > 0) return; 
 
                 this.health -= amount;
@@ -942,7 +942,7 @@
                     this.gameState = 'levelup';
                     document.getElementById('levelUpScreen').classList.remove('hidden');
                     this.sounds.levelUp();
-                    // El bucle de animaciÛn se detiene aquÌ y solo se reanuda en selectBoost()
+                    // El bucle de animaci√≥n se detiene aqu√≠ y solo se reanuda en selectBoost()
                 } else {
                     this.spawnWave();
                 }
@@ -1084,7 +1084,7 @@
             update(deltaTime) {
                 // Ya no necesitamos verificar gameState, el bucle solo llama a update() si gameState es 'playing'
                 
-                // --- FIX CRÕTICO: LÌmite de DeltaTime (para prevenir errores de fÌsica en lag) ---
+                // --- FIX CR√çTICO: L√≠mite de DeltaTime (para prevenir errores de f√≠sica en lag) ---
                 deltaTime = Math.min(deltaTime, 100); 
                 // ----------------------------------------
                 
@@ -1115,11 +1115,11 @@
                     this.player.invulnerableTimer -= deltaTime;
                 }
 
-                // --- REGENERACI”N DE RECURSOS ---
+                // --- REGENERACI√ìN DE RECURSOS ---
                 let healthRegen = this.healthRegenRate;
                 let energyRegen = this.energyRegenRate;
 
-                // --- L”GICA DEL CAMPO DE CURACI”N (ESCUDO Q) ---
+                // --- L√ìGICA DEL CAMPO DE CURACI√ìN (ESCUDO Q) ---
                 if (this.isHealingFieldActive) {
                     this.healingFieldTimer -= deltaTime;
                     this.healingFieldLocation.x = this.player.x;
@@ -1128,13 +1128,13 @@
                     if (this.healingFieldTimer <= 0) {
                         this.isHealingFieldActive = false;
                     } else {
-                        // Aumentar regeneraciÛn dentro del campo
+                        // Aumentar regeneraci√≥n dentro del campo
                         healthRegen += this.healingRegenBoost;
                         energyRegen += this.energyRegenBoost;
                     }
                 }
 
-                // Aplicar regeneraciÛn
+                // Aplicar regeneraci√≥n
                 this.energy = Math.min(this.maxEnergy, this.energy + energyRegen * deltaTime / 1000);
                 this.health = Math.min(this.maxHealth, this.health + healthRegen * deltaTime / 1000);
 
@@ -1188,7 +1188,7 @@
                             if (entity.health <= 0) {
                                 this.score += entity.type === 'heavy' ? 50 : entity.type === 'fast' ? 30 : 20;
                                 
-                                // L”GICA DE DROP M⁄LTIPLE 
+                                // L√ìGICA DE DROP M√öLTIPLE 
                                 let dropCount = 2; // Por defecto 2-3
                                 let dropType = 'energy';
 
@@ -1196,7 +1196,7 @@
                                     dropCount = Math.floor(Math.random() * 4) + 2; // 2 a 5 Puntos de Vida
                                     dropType = 'health';
                                 } else {
-                                    dropCount = Math.floor(Math.random() * 2) + 2; // 2 a 3 Puntos de EnergÌa
+                                    dropCount = Math.floor(Math.random() * 2) + 2; // 2 a 3 Puntos de Energ√≠a
                                 }
                                 
                                 for (let k = 0; k < dropCount; k++) {
@@ -1211,11 +1211,11 @@
                     }
                 }
 
-                // --- Update entities y COLISI”N CON JUGADOR ---
+                // --- Update entities y COLISI√ìN CON JUGADOR ---
                 for (let i = this.entities.length - 1; i >= 0; i--) {
                     const entity = this.entities[i];
                     
-                    // RepulsiÛn del campo de curaciÛn (si est· activo)
+                    // Repulsi√≥n del campo de curaci√≥n (si est√° activo)
                     if (this.isHealingFieldActive) {
                         const distToHealingField = Math.hypot(entity.x - this.healingFieldLocation.x, entity.y - this.healingFieldLocation.y);
                         if (distToHealingField < this.healingFieldRadius) {
@@ -1228,7 +1228,7 @@
 
                     // Move towards player
                     const angle = Math.atan2(this.player.y - entity.y, this.player.x - entity.x);
-                    // Uso de deltaTime / 16 (para sincronizaciÛn con un target de 60fps)
+                    // Uso de deltaTime / 16 (para sincronizaci√≥n con un target de 60fps)
                     entity.x += Math.cos(angle) * entity.speed * deltaTime / 16;
                     entity.y += Math.sin(angle) * entity.speed * deltaTime / 16;
 
@@ -1238,7 +1238,7 @@
                     // Check collision with player
                     const dist = Math.hypot(entity.x - this.player.x, entity.y - this.player.y);
                     if (dist < entity.radius + this.player.radius) {
-                        this.takeDamage(10); // EL JUGADOR RECIBE DA—O
+                        this.takeDamage(10); // EL JUGADOR RECIBE DA√ëO
                         
                         // Impulso para separar la entidad del jugador (knockback)
                         const angle = Math.atan2(entity.y - this.player.y, entity.x - this.player.x);
@@ -1257,7 +1257,7 @@
                         continue;
                     }
 
-                    // Move towards player (atracciÛn)
+                    // Move towards player (atracci√≥n)
                     const dist = Math.hypot(particle.x - this.player.x, particle.y - this.player.y);
                     if (dist < 150) {
                         const angle = Math.atan2(this.player.y - particle.y, this.player.x - particle.x);
@@ -1281,7 +1281,7 @@
                     }
                 }
 
-                // --- Wave management (L”GICA DE NIVEL Y OLEADAS) ---
+                // --- Wave management (L√ìGICA DE NIVEL Y OLEADAS) ---
                 this.waveTimer += deltaTime;
                 if (this.waveTimer > this.waveInterval) {
                     this.waveTimer = 0;
@@ -1289,7 +1289,7 @@
                         this.level++;
                         this.checkLevelUp();
                         if (this.gameMode === 'hard' && this.waveInterval > 1000) {
-                             this.waveInterval -= 100; // Acelerar oleadas en difÌcil
+                             this.waveInterval -= 100; // Acelerar oleadas en dif√≠cil
                         }
                     }
                 }
@@ -1418,7 +1418,7 @@
                     this.ctx.strokeStyle = 'white';
                     this.ctx.lineWidth = 2;
 
-                    // L”GICA DE DIBUJO PARA EL CUADRADO
+                    // L√ìGICA DE DIBUJO PARA EL CUADRADO
                     if (entity.type === 'square') {
                         const size = entity.radius * 2;
                         this.ctx.save();
@@ -1492,7 +1492,7 @@
                     }
                     this.render();
                     
-                    // L”GICA DE PAUSA CORREGIDA: Solo solicita el siguiente frame si el juego est· activo.
+                    // L√ìGICA DE PAUSA CORREGIDA: Solo solicita el siguiente frame si el juego est√° activo.
                     this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
                 } 
             }
