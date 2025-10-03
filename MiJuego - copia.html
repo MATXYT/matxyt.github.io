@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity Slicer: Multiverse Convergence (v1.0.0 - Definitiva)</title>
+    <style>
+        /* ========================================================= */
+        /* CSS */
+        /* ========================================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c1445 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            cursor: none;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 800px; /* Tamaño fijo para el lienzo */
+            height: 600px;
+            margin: 20px;
+        }
+
+        canvas {
+            border: 3px solid #4cc9f0;
+            border-radius: 10px;
+            background: #0a0a2a;
+            box-shadow: 0 0 30px rgba(76, 201, 240, 0.3);
+            display: block;
+        }
+
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+            display: flex; 
+            gap: 10px;    
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(10, 10, 30, 0.95);
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #4cc9f0;
+            background: linear-gradient(45deg, #4cc9f0, #f72585);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center; 
+            line-height: 1.1; 
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #4cc9f0;
+        }
+
+        button {
+            background: linear-gradient(45deg, #4cc9f0, #560bad);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.5);
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(76, 201, 240, 0.8);
+        }
+
+        .stats {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 5px;
+            border: 1px solid #4cc9f0;
+            font-size: 1.1em;
+        }
+
+        #customCursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(76, 201, 240, 0.8);
+            border: 2px solid white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+        }
+
+        .slice-effect {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(247, 37, 133, 0.5), transparent);
+            pointer-events: none;
+            z-index: 50;
+            transform-origin: center;
+        }
+        
+        .instructions {
+            text-align: center;
+            margin: 20px;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .control-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border: 1px solid transparent;
+        }
+        
+        .control-item strong {
+            color: #4cc9f0;
+            font-weight: bold;
+        }
+        
+        /* Estilos específicos para el Panel de Estadísticas en la Pausa (Creative Mode) */
+        #statControlPanelGrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 30px;
+            padding: 10px 0;
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        .stat-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .stat-group label {
+            font-weight: bold;
+            color: #00b4d8;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .stat-group input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #555;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+
+        .stat-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #00b4d8;
+            cursor: pointer;
+            box-shadow: 0 0 5px #00b4d8;
+        }
+        
+        /* Estilo para el Checkbox */
+        .invul-control {
+            grid-column: span 2;
+            text-align: center;
+            border: 2px solid #b4ffb4;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .invul-control input[type="checkbox"] {
+            width: 30px; 
+            height: 30px; 
+            margin: 10px auto; 
+            cursor: pointer;
+            accent-color: #b4ffb4;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="ui">
+            <div class="stats">Salud: <span id="healthValue">100/100</span></div> 
+            <div class="stats">Puntaje: <span id="score">0</span></div>
+            <div class="stats">Nivel: <span id="level">1</span></div>
+            <div class="stats">Energía: <span id="energy">100/100</span></div>
+        </div>
+
+        <div id="menuScreen" class="screen">
+            <h1>GRAVITY SLICER: MULTIVERSE CONVERGENCE</h1>
+            <div class="instructions">
+                <p>Corta el espacio-tiempo, manipula la gravedad y recolecta energía cuántica.</p>
+                <p>¡Destruye a los entidades dimensionales antes de que colapsen tu realidad!</p>
+            </div>
+            <div class="controls">
+                <div class="control-item">Movimiento: WASD o Flechas</div>
+                <div class="control-item">Campo de Gravedad: Click Izquierdo (consume 20 Energía)</div>
+                <div class="control-item">Corte Espacial: Click Derecho (consume 15 Energía)</div>
+                <div class="control-item" style="color: #b4ffb4; border-color: #b4ffb4;">Campo de Curación/Repulsión: **Q** (consume 75 Energía)</div>
+                <div class="control-item">Pausa: P</div>
+            </div>
+            <button onclick="game.startGame('normal')">INICIAR JUEGO (NORMAL)</button>
+            <button onclick="game.startGame('hard')" style="background: linear-gradient(45deg, #f72585, #7209b7);">MODO DIFICIL</button>
+            <button onclick="game.showCreativeModeSetup()" style="background: linear-gradient(45deg, #00b4d8, #0077b6);">MODO CREATIVO</button>
+        </div>
+
+        <div id="creativeModeSetupScreen" class="screen hidden">
+            <h1 style="color: #00b4d8; text-shadow: 0 0 20px #00b4d8; margin-bottom: 20px;">SANDBOX DE REALIDAD</h1>
+            
+            <div class="instructions">
+                <p style="color: #00b4d8; font-weight: bold; font-size: 1.1em; margin-bottom: 15px;">
+                    ¡Modo Creativo Activado!
+                </p>
+                <p>El juego comenzará con recursos casi infinitos y velocidad alta.
+                    <br>
+                    Presiona **P** (Pausa) en cualquier momento para modificar las estadísticas en **tiempo real**.
+                </p>
+            </div>
+
+            <button onclick="game.startCreativeMode()" style="background: linear-gradient(45deg, #00b4d8, #0077b6);">OK, INICIAR SANDBOX</button>
+        </div>
+
+        <div id="levelUpScreen" class="screen hidden">
+            <h2>MEJORA DE REALIDAD</h2>
+            <p style="margin-bottom: 25px; color: #4cc9f0;">¡Nivel Múltiplo de 3/5 Completado! Elige tu mejora para continuar:</p>
+            <button id="boostHealth">VIDA (+30 Max Salud)</button>
+            <button id="boostSpeed">VELOCIDAD (+2 al Movimiento)</button>
+            <button id="boostEnergy">ENERGÍA (+50 Max Energía)</button>
+        </div>
+
+        <div id="gameOverScreen" class="screen hidden">
+            <h2>REALIDAD COLAPSADA</h2>
+            <div class="stats">Puntuación Final: <span id="finalScore">0</span></div>
+            <div class="stats">Mejor Puntuación: <span id="highScore">0</span></div>
+            <button id="restartButton">REINTENTAR</button>
+            <button id="menuButton">MENÚ</button>
+        </div>
+
+        <div id="pauseScreen" class="screen hidden">
+            <h2>JUEGO EN PAUSA</h2>
+
+            <div id="realTimeStatControlPanel" class="hidden">
+                <p style="color: #00b4d8; font-weight: bold; margin-bottom: 10px; margin-top: 10px;">
+                    CONTROLES DE SANDBOX (Tiempo Real):
+                </p>
+                <div id="statControlPanelGrid">
+                    
+                    <div class="stat-group">
+                        <label for="maxHealthRT">Vida Máxima: <span id="valHealthRT">9999</span></label>
+                        <input type="range" id="maxHealthRT" min="10" max="10000" value="9999" oninput="game.updateRealTimeStats(this)">
+                    </div>
+                    
+                    <div class="stat-group">
+                        <label for="maxEnergyRT">Energía Máxima: <span id="valEnergyRT">9999</span></label>
+                        <input type="range" id="maxEnergyRT" min="50" max="10000" value="9999" oninput="game.updateRealTimeStats(this)">
+                    </div>
+                    
+                    <div class="stat-group">
+                        <label for="playerSpeedBonusRT">Bono de Velocidad (Base 5): <span id="valSpeedRT">10</span></label>
+                        <input type="range" id="playerSpeedBonusRT" min="0" max="50" value="10" oninput="game.updateRealTimeStats(this)">
+                    </div>
+                    
+                    <div class="stat-group">
+                        <label for="entityLevelRT">Nivel Base de Entidades: <span id="valLevelRT">50</span></label>
+                        <input type="range" id="entityLevelRT" min="1" max="100" value="50" oninput="game.updateRealTimeStats(this)">
+                    </div>
+                    
+                    <div class="invul-control">
+                        <label for="invulnerabilityCheck" style="justify-content: center; color: #b4ffb4; font-size: 1.1em; margin-bottom: 0;">
+                            Modo Fantasma (Invulnerabilidad)
+                        </label>
+                        <input type="checkbox" id="invulnerabilityCheck">
+                    </div>
+                    
+                </div>
+                <div class="instructions" style="max-width: 650px; margin-top: 20px;">
+                    <p style="color: #aaa; font-size: 0.9em; line-height: 1.5;">
+                        **Controles Rápidos (Fuera de Pausa):**
+                        <br>
+                        Generar Entidad (Normal/Rápida/Pesada/Cuadrada): **1 / 2 / 3 / 4** (en la posición del cursor).
+                        <br>
+                        Generar Punto de Energía: **9** | Generar Punto de Vida: **0** (en la posición del cursor).
+                        <br>
+                        Borrar Todo (Entidades y Campos): **R**.
+                    </p>
+                </div>
+            </div>
+
+            <button id="resumeButton">CONTINUAR</button>
+            <button id="pauseMenuButton">MENÚ</button>
+        </div>
+    </div>
+
+    <div id="customCursor"></div>
+
+    <script>
+        /* ========================================================= */
+        /* JAVASCRIPT (Lógica del Juego y Ajustes de Dificultad) */
+        /* ========================================================= */
+        class Game {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.gameState = 'menu';
+                this.score = 0;
+                this.level = 1;
+                this.gameMode = 'normal'; 
+
+                // --- PROPIEDADES DE ESTADO ---
+                this.maxEnergy = 100;
+                this.energy = 100;
+                this.energyRegenRate = 2; 
+                
+                this.maxHealth = 100; 
+                this.health = 100;
+                this.healthRegenRate = 1; 
+                this.playerSpeedBonus = 0; 
+                
+                // ESTADOS DE INVULNERABILIDAD
+                this.isInvulnerableManual = false; 
+                
+                // --- PROPIEDADES DEL CAMPO DE CURACIÓN (ESCUDO Q) ---
+                this.isHealingFieldActive = false;
+                this.healingFieldLocation = {x: 0, y: 0};
+                this.healingFieldTimer = 0;
+                this.healingFieldRepulsionStrength = 8; 
+                this.healingFieldRadius = 150; 
+                this.healingRegenBoost = 4; 
+                this.energyRegenBoost = 3; 
+                this.healingFieldEnergyCost = 75;
+                this.healingFieldDuration = 7000; 
+                // ----------------------------------------
+                
+                this.entities = [];
+                this.projectiles = [];
+                this.gravityFields = [];
+                this.slices = [];
+                this.pickupParticles = []; 
+                
+                this.keys = {};
+                this.mouse = { x: 0, y: 0, left: false, right: false };
+                this.lastTime = 0;
+                this.deltaTime = 0;
+                this.waveTimer = 0;
+                this.waveInterval = 5000;
+                this.particleSpawnTimer = 0;
+                this.customCursor = document.getElementById('customCursor');
+                this.animationFrameId = null; // ID para controlar el bucle de animación
+
+                this.player = {
+                    x: this.canvas.width / 2,
+                    y: this.canvas.height / 2,
+                    radius: 20,
+                    speed: 5, 
+                    color: '#4cc9f0',
+                    trail: [],
+                    invulnerableTimer: 0, 
+                    invulnerableDuration: 500,
+                };
+
+                this.setupCanvas();
+                this.setupInput();
+                this.setupAudio();
+                this.loadHighScore();
+                this.setupUIEventListeners(); 
+            }
+
+            setupCanvas() {
+                const resize = () => {
+                    const container = document.getElementById('gameContainer');
+                    const ratio = Math.min(
+                        container.clientWidth / 800,
+                        container.clientHeight / 600
+                    );
+                    this.canvas.style.width = (800 * ratio) + 'px';
+                    this.canvas.style.height = (600 * ratio) + 'px';
+                };
+
+                window.addEventListener('resize', resize);
+                resize();
+            }
+
+            setupInput() {
+                document.addEventListener('keydown', (e) => {
+                    this.keys[e.code] = true;
+                    if (e.code === 'KeyP' && this.gameState === 'playing') {
+                        this.pauseGame();
+                    } else if (e.code === 'KeyP' && this.gameState === 'paused') {
+                        this.resumeGame();
+                    }
+                    if (e.code === 'KeyQ' && this.gameState === 'playing' && !this.isHealingFieldActive) {
+                        this.createHealingField();
+                    }
+
+                    // --- CONTROLES DE MODO CREATIVO ---
+                    if (this.gameMode === 'creative' && this.gameState === 'playing') {
+                        const x = this.mouse.x;
+                        const y = this.mouse.y;
+
+                        switch (e.code) {
+                            case 'KeyR': // Clear all
+                                this.entities = [];
+                                this.gravityFields = [];
+                                this.slices = [];
+                                this.pickupParticles = [];
+                                break;
+                            case 'Digit1':
+                                this.spawnCreativeEntity(x, y, 'normal');
+                                break;
+                            case 'Digit2':
+                                this.spawnCreativeEntity(x, y, 'fast');
+                                break;
+                            case 'Digit3':
+                                this.spawnCreativeEntity(x, y, 'heavy');
+                                break;
+                            case 'Digit4':
+                                this.spawnCreativeEntity(x, y, 'square');
+                                break;
+                            case 'Digit9':
+                                this.spawnPickupParticle(x, y, 'energy');
+                                break;
+                            case 'Digit0':
+                                this.spawnPickupParticle(x, y, 'health');
+                                break;
+                        }
+                    }
+                });
+
+                document.addEventListener('keyup', (e) => {
+                    this.keys[e.code] = false;
+                });
+
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.mouse.x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+                    this.mouse.y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+                    
+                    this.customCursor.style.left = e.clientX + 'px';
+                    this.customCursor.style.top = e.clientY + 'px';
+                });
+
+                this.canvas.addEventListener('mousedown', (e) => {
+                    if (this.gameState !== 'playing') return;
+                    
+                    if (e.button === 0) {
+                        this.mouse.left = true;
+                        this.createGravityField();
+                    } else if (e.button === 2) {
+                        this.mouse.right = true;
+                        this.createSlice();
+                    }
+                });
+
+                this.canvas.addEventListener('mouseup', (e) => {
+                    if (e.button === 0) this.mouse.left = false;
+                    if (e.button === 2) this.mouse.right = false;
+                });
+
+                this.canvas.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                });
+
+                // Touch support (Simplificado)
+                this.canvas.addEventListener('touchstart', (e) => {
+                    if (this.gameState !== 'playing') return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.mouse.x = (touch.clientX - rect.left) * (this.canvas.width / rect.width);
+                    this.mouse.y = (touch.clientY - rect.top) * (this.canvas.height / rect.height);
+                    
+                    if (e.touches.length >= 2) {
+                        this.createSlice();
+                    } else {
+                        this.createGravityField();
+                    }
+                });
+
+                this.canvas.addEventListener('touchmove', (e) => {
+                    if (this.gameState !== 'playing') return;
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.mouse.x = (touch.clientX - rect.left) * (this.canvas.width / rect.width);
+                    this.mouse.y = (touch.clientY - rect.top) * (this.canvas.height / rect.height);
+                });
+
+                this.canvas.addEventListener('touchend', (e) => {
+                    this.mouse.left = false;
+                    this.mouse.right = false;
+                });
+            }
+
+            setupAudio() {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                this.sounds = {
+                    slice: this.createSound(800, 0.3, 0.2),
+                    gravity: this.createSound(300, 0.5, 0.8),
+                    collect: this.createSound(1200, 0.2, 0.1),
+                    enemyHit: this.createSound(400, 0.3, 0.3),
+                    levelUp: this.createSound(1500, 0.4, 0.5),
+                    boost: this.createSound(2000, 0.2, 0.4),
+                };
+            }
+
+            createSound(frequency, duration, volume) {
+                return () => {
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
+                    
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + duration);
+                };
+            }
+
+            loadHighScore() {
+                this.highScore = parseInt(localStorage.getItem('gravitySlicerHighScore')) || 0;
+            }
+
+            saveHighScore() {
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+                    localStorage.setItem('gravitySlicerHighScore', this.highScore.toString());
+                }
+            }
+            
+            showCreativeModeSetup() {
+                this.gameState = 'setup';
+                document.getElementById('menuScreen').classList.add('hidden');
+                document.getElementById('creativeModeSetupScreen').classList.remove('hidden');
+                
+                document.getElementById('realTimeStatControlPanel').classList.add('hidden');
+            }
+
+            startCreativeMode() {
+                this.startGame('creative');
+            }
+
+            startGame(mode = 'normal') {
+                // Asegurarse de que cualquier bucle anterior se detenga
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+                
+                this.gameState = 'playing';
+                this.score = 0;
+                this.gameMode = mode; 
+                this.isInvulnerableManual = false; 
+                
+                // --- INICIALIZACIÓN DE ESTADÍSTICAS SEGÚN EL MODO ---
+                if (this.gameMode === 'creative') {
+                    // Valores iniciales altos para el modo creativo
+                    this.level = 50;
+                    this.maxHealth = 9999;
+                    this.health = 9999;
+                    this.playerSpeedBonus = 10;
+                    this.maxEnergy = 9999;
+                    this.energy = 9999;
+                    this.waveInterval = 99999999; 
+                    // Sincronizar UI del panel creativo
+                    document.getElementById('maxHealthRT').value = this.maxHealth;
+                    document.getElementById('maxEnergyRT').value = this.maxEnergy;
+                    document.getElementById('playerSpeedBonusRT').value = this.playerSpeedBonus;
+                    document.getElementById('entityLevelRT').value = this.level;
+                } else if (this.gameMode === 'hard') {
+                    this.level = 1; // Comienza en nivel 1, pero con dificultad
+                    this.maxHealth = 150;       
+                    this.health = 150;
+                    this.playerSpeedBonus = 1;  
+                    this.maxEnergy = 120;       
+                    this.energy = 120;
+                    this.waveInterval = 4000;
+                } else { // Normal mode
+                    this.level = 1;
+                    this.maxHealth = 100;
+                    this.health = 100;
+                    this.playerSpeedBonus = 0;
+                    this.maxEnergy = 100;
+                    this.energy = 100;
+                    this.waveInterval = 5000;
+                }
+                // ----------------------------------------------------
+                
+                this.player.invulnerableTimer = 0; 
+                this.isHealingFieldActive = false;
+                this.healingFieldTimer = 0;
+                
+                this.entities = [];
+                this.projectiles = [];
+                this.gravityFields = [];
+                this.slices = [];
+                this.pickupParticles = [];
+                
+                this.player.x = this.canvas.width / 2;
+                this.player.y = this.canvas.height / 2;
+                this.player.trail = [];
+                this.waveTimer = 0;
+                this.particleSpawnTimer = 0;
+                
+                document.getElementById('menuScreen').classList.add('hidden');
+                document.getElementById('gameOverScreen').classList.add('hidden');
+                document.getElementById('pauseScreen').classList.add('hidden');
+                document.getElementById('levelUpScreen').classList.add('hidden');
+                document.getElementById('creativeModeSetupScreen').classList.add('hidden');
+                
+                this.updateUI();
+                if (this.gameMode !== 'creative') {
+                    this.spawnWave(); 
+                }
+                this.lastTime = performance.now();
+                this.gameLoop(); 
+            }
+
+            pauseGame() {
+                if (this.gameState === 'playing') {
+                    this.gameState = 'paused';
+                    
+                    // CORRECCIÓN CRÍTICA: Detener el bucle de animación de inmediato
+                    if (this.animationFrameId) {
+                        cancelAnimationFrame(this.animationFrameId);
+                        this.animationFrameId = null;
+                    }
+
+                    document.getElementById('pauseScreen').classList.remove('hidden');
+
+                    if (this.gameMode === 'creative') {
+                        const panel = document.getElementById('realTimeStatControlPanel');
+                        panel.classList.remove('hidden');
+                        
+                        // Sincronizar Sliders con el estado actual del juego
+                        document.getElementById('maxHealthRT').value = this.maxHealth;
+                        document.getElementById('valHealthRT').textContent = this.maxHealth;
+                        
+                        document.getElementById('maxEnergyRT').value = this.maxEnergy;
+                        document.getElementById('valEnergyRT').textContent = this.maxEnergy;
+                        
+                        document.getElementById('playerSpeedBonusRT').value = this.playerSpeedBonus;
+                        document.getElementById('valSpeedRT').textContent = this.playerSpeedBonus;
+
+                        document.getElementById('entityLevelRT').value = this.level;
+                        document.getElementById('valLevelRT').textContent = this.level;
+                        
+                        // Sincronizar Checkbox de Invulnerabilidad
+                        document.getElementById('invulnerabilityCheck').checked = this.isInvulnerableManual;
+                        // Escuchar el cambio en el checkbox
+                        document.getElementById('invulnerabilityCheck').onchange = (e) => {
+                            this.isInvulnerableManual = e.target.checked;
+                        };
+                    } else {
+                         document.getElementById('realTimeStatControlPanel').classList.add('hidden');
+                    }
+                }
+            }
+
+            resumeGame() {
+                if (this.gameState === 'paused') {
+                    if (this.gameMode === 'creative') {
+                        // Ocultar el panel de control antes de reanudar
+                        document.getElementById('realTimeStatControlPanel').classList.add('hidden');
+                    }
+                    
+                    this.gameState = 'playing';
+                    document.getElementById('pauseScreen').classList.add('hidden');
+                    this.lastTime = performance.now(); // FIX: Resetear el tiempo para evitar el salto supersónico
+                    this.gameLoop(); // Reiniciar el loop
+                }
+            }
+            
+            updateRealTimeStats(element) {
+                const value = parseInt(element.value);
+                const id = element.id;
+
+                let targetSpanId;
+                
+                switch (id) {
+                    case 'maxHealthRT':
+                        targetSpanId = 'valHealthRT';
+                        this.maxHealth = value;
+                        this.health = Math.min(this.health, this.maxHealth); 
+                        break;
+                    case 'maxEnergyRT':
+                        targetSpanId = 'valEnergyRT';
+                        this.maxEnergy = value;
+                        this.energy = Math.min(this.energy, this.maxEnergy); 
+                        break;
+                    case 'playerSpeedBonusRT':
+                        targetSpanId = 'valSpeedRT';
+                        this.playerSpeedBonus = value;
+                        break;
+                    case 'entityLevelRT':
+                        targetSpanId = 'valLevelRT'; 
+                        this.level = value;
+                        break;
+                    default: return; 
+                }
+                
+                const targetSpan = document.getElementById(targetSpanId);
+                if (targetSpan) {
+                    targetSpan.textContent = value;
+                }
+
+                this.updateUI();
+            }
+            
+            setupUIEventListeners() {
+                document.getElementById('restartButton').addEventListener('click', () => {
+                    if (this.gameMode === 'creative') {
+                         this.showCreativeModeSetup();
+                    } else {
+                        this.startGame(this.gameMode); 
+                    }
+                });
+                
+                document.getElementById('menuButton').addEventListener('click', () => {
+                    this.showMenu();
+                });
+                
+                document.getElementById('resumeButton').addEventListener('click', () => {
+                    this.resumeGame();
+                });
+                
+                document.getElementById('pauseMenuButton').addEventListener('click', () => {
+                    this.showMenu();
+                });
+
+                document.getElementById('boostHealth').addEventListener('click', () => {
+                    this.selectBoost('health');
+                });
+                document.getElementById('boostSpeed').addEventListener('click', () => {
+                    this.selectBoost('speed');
+                });
+                document.getElementById('boostEnergy').addEventListener('click', () => {
+                    this.selectBoost('energy');
+                });
+            }
+
+            showMenu() {
+                this.gameState = 'menu';
+                // Detener el bucle de animación
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+                document.getElementById('menuScreen').classList.remove('hidden');
+                document.getElementById('gameOverScreen').classList.add('hidden');
+                document.getElementById('pauseScreen').classList.add('hidden');
+                document.getElementById('creativeModeSetupScreen').classList.add('hidden');
+                document.getElementById('levelUpScreen').classList.add('hidden');
+            }
+
+            gameOver() {
+                this.gameState = 'gameover';
+                this.saveHighScore();
+                
+                document.getElementById('finalScore').textContent = this.score;
+                document.getElementById('highScore').textContent = this.highScore;
+                document.getElementById('gameOverScreen').classList.remove('hidden');
+                // Detener el bucle de animación
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+            }
+
+            takeDamage(amount) {
+                // Si está en modo manual o es temporalmente invulnerable, no recibe daño
+                if (this.isInvulnerableManual || this.player.invulnerableTimer > 0) return; 
+
+                this.health -= amount;
+                this.player.invulnerableTimer = this.player.invulnerableDuration; // Invulnerabilidad temporal
+                this.sounds.enemyHit();
+                
+                if (this.health <= 0) {
+                    this.health = 0;
+                    this.gameOver();
+                }
+                this.updateUI();
+            }
+
+            updateUI() {
+                document.getElementById('healthValue').textContent = `${Math.floor(this.health)}/${this.maxHealth}`;
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('level').textContent = this.level;
+                document.getElementById('energy').textContent = `${Math.floor(this.energy)}/${this.maxEnergy}`;
+            }
+
+            createHealingField() {
+                if (this.energy < this.healingFieldEnergyCost) return;
+                
+                this.energy -= this.healingFieldEnergyCost;
+                this.isHealingFieldActive = true;
+                this.healingFieldLocation = {x: this.player.x, y: this.player.y};
+                this.healingFieldTimer = this.healingFieldDuration;
+                this.sounds.boost();
+            }
+
+            createGravityField() {
+                if (this.energy < 20) return;
+                
+                this.energy -= 20;
+                this.sounds.gravity();
+                
+                this.gravityFields.push({
+                    x: this.mouse.x,
+                    y: this.mouse.y,
+                    radius: 100,
+                    strength: 2,
+                    lifetime: 3000,
+                    createdAt: performance.now(),
+                    color: 'rgba(76, 201, 240, 0.3)'
+                });
+            }
+
+            createSlice() {
+                if (this.energy < 15) return;
+                
+                this.energy -= 15;
+                this.sounds.slice();
+                
+                const angle = Math.atan2(this.mouse.y - this.player.y, this.mouse.x - this.player.x);
+                
+                this.slices.push({
+                    x: this.player.x,
+                    y: this.player.y,
+                    angle: angle,
+                    length: 200,
+                    width: 5,
+                    speed: 15,
+                    lifetime: 500,
+                    createdAt: performance.now(),
+                    color: 'rgba(247, 37, 133, 0.8)'
+                });
+
+                // Visual effect (usando div)
+                const sliceDiv = document.createElement('div');
+                sliceDiv.className = 'slice-effect';
+                sliceDiv.style.left = this.player.x + 'px';
+                sliceDiv.style.top = this.player.y + 'px';
+                sliceDiv.style.width = '200px';
+                sliceDiv.style.height = '5px';
+                sliceDiv.style.transform = `rotate(${angle}rad)`;
+                document.getElementById('gameContainer').appendChild(sliceDiv);
+                
+                setTimeout(() => {
+                    if (document.getElementById('gameContainer').contains(sliceDiv)) {
+                        document.getElementById('gameContainer').removeChild(sliceDiv);
+                    }
+                }, 500);
+            }
+
+            selectBoost(type) {
+                switch (type) {
+                    case 'health':
+                        this.maxHealth += 30;
+                        this.health = Math.min(this.maxHealth, this.health + 30);
+                        break;
+                    case 'speed':
+                        this.playerSpeedBonus += 2;
+                        break;
+                    case 'energy':
+                        this.maxEnergy += 50;
+                        this.energy = Math.min(this.maxEnergy, this.energy + 50);
+                        break;
+                }
+                this.updateUI();
+                this.sounds.boost();
+                
+                this.gameState = 'playing'; 
+                this.lastTime = performance.now(); // FIX: Resetear tiempo al reanudar
+                
+                document.getElementById('levelUpScreen').classList.add('hidden');
+                this.gameLoop(); // Reanudar el loop
+            }
+
+            checkLevelUp() {
+                // Mejora cada 3 o 5 niveles
+                if (this.level % 3 === 0 || this.level % 5 === 0) {
+                    this.gameState = 'levelup';
+                    document.getElementById('levelUpScreen').classList.remove('hidden');
+                    this.sounds.levelUp();
+                    // El bucle de animación se detiene aquí y solo se reanuda en selectBoost()
+                } else {
+                    this.spawnWave();
+                }
+            }
+
+            spawnCreativeEntity(x, y, type) {
+                 let speed, radius, health, color;
+                    
+                    switch (type) {
+                        case 'fast':
+                            speed = 5;
+                            radius = 15;
+                            health = 5;
+                            color = '#f72585';
+                            break;
+                        case 'heavy':
+                            speed = 2;
+                            radius = 25;
+                            health = 20;
+                            color = '#7209b7';
+                            break;
+                        case 'square': 
+                            speed = 1;
+                            radius = 30;
+                            health = 40;
+                            color = '#ff6b6b'; 
+                            break;
+                        default: // 'normal'
+                            speed = 3;
+                            radius = 20;
+                            health = 10;
+                            color = '#3a0ca3';
+                    }
+                    
+                    this.entities.push({
+                        x: x,
+                        y: y,
+                        radius: radius,
+                        speed: speed,
+                        health: health,
+                        maxHealth: health,
+                        color: color,
+                        type: type,
+                        trail: []
+                    });
+            }
+
+            spawnWave() {
+                const count = 5 + this.level * (this.gameMode === 'hard' ? 3 : 1);
+                
+                // Tipos base
+                const types = ['normal', 'fast', 'heavy'];
+                
+                // El Cubo Rojo (square) solo aparece del nivel 7 en adelante
+                if (this.level >= 7) {
+                    types.push('square'); 
+                }
+
+                for (let i = 0; i < count; i++) {
+                    const type = types[Math.floor(Math.random() * types.length)]; 
+
+                    let speed, radius, health, color;
+                    
+                    switch (type) {
+                        case 'fast':
+                            speed = 3 + this.level * 0.2 * (this.gameMode === 'hard' ? 1.2 : 1);
+                            radius = 15;
+                            health = 1;
+                            color = '#f72585';
+                            break;
+                        case 'heavy':
+                            speed = 1 + this.level * 0.1 * (this.gameMode === 'hard' ? 1.2 : 1);
+                            radius = 25;
+                            health = 3 + this.level;
+                            color = '#7209b7';
+                            break;
+                        case 'square': 
+                            speed = 0.5 + this.level * 0.05 * (this.gameMode === 'hard' ? 1.2 : 1);
+                            radius = 30;
+                            health = 5 + this.level * 2;
+                            color = '#ff6b6b'; 
+                            break;
+                        default: // 'normal'
+                            speed = 2 + this.level * 0.15 * (this.gameMode === 'hard' ? 1.2 : 1);
+                            radius = 20;
+                            health = 2 + Math.floor(this.level / 2);
+                            color = '#3a0ca3';
+                    }
+                    
+                    let x, y;
+                    if (Math.random() < 0.5) {
+                        x = Math.random() < 0.5 ? -radius : this.canvas.width + radius;
+                        y = Math.random() * this.canvas.height;
+                    } else {
+                        x = Math.random() * this.canvas.width;
+                        y = Math.random() < 0.5 ? -radius : this.canvas.height + radius;
+                    }
+                    
+                    this.entities.push({
+                        x: x,
+                        y: y,
+                        radius: radius,
+                        speed: speed,
+                        health: health,
+                        maxHealth: health,
+                        color: color,
+                        type: type,
+                        trail: []
+                    });
+                }
+            }
+
+            spawnPickupParticle(x, y, type = 'energy') {
+                let radius, value, color;
+
+                if (type === 'health') { 
+                    radius = 10;
+                    value = 10; 
+                    color = '#b4ffb4'; 
+                } else { // 'energy'
+                    radius = 8;
+                    value = 10; 
+                    color = '#ffbe0b'; 
+                }
+
+                this.pickupParticles.push({
+                    x: x,
+                    y: y,
+                    radius: radius,
+                    value: value,
+                    color: color,
+                    type: type, 
+                    lifetime: 10000,
+                    createdAt: performance.now(),
+                    collected: false
+                });
+            }
+
+            update(deltaTime) {
+                // Ya no necesitamos verificar gameState, el bucle solo llama a update() si gameState es 'playing'
+                
+                // --- FIX CRÍTICO: Límite de DeltaTime (para prevenir errores de física en lag) ---
+                deltaTime = Math.min(deltaTime, 100); 
+                // ----------------------------------------
+                
+                // --- MOVIMIENTO DEL JUGADOR ---
+                const playerSpeed = this.player.speed + this.playerSpeedBonus;
+                let dx = 0, dy = 0;
+                if (this.keys['KeyW'] || this.keys['ArrowUp']) dy -= 1;
+                if (this.keys['KeyS'] || this.keys['ArrowDown']) dy += 1;
+                if (this.keys['KeyA'] || this.keys['ArrowLeft']) dx -= 1;
+                if (this.keys['KeyD'] || this.keys['ArrowRight']) dx += 1;
+
+                if (dx !== 0 && dy !== 0) {
+                    dx *= 0.7071;
+                    dy *= 0.7071;
+                }
+
+                this.player.x += dx * playerSpeed;
+                this.player.y += dy * playerSpeed;
+
+                this.player.x = Math.max(this.player.radius, Math.min(this.canvas.width - this.player.radius, this.player.x));
+                this.player.y = Math.max(this.player.radius, Math.min(this.canvas.height - this.player.radius, this.player.y));
+
+                this.player.trail.push({x: this.player.x, y: this.player.y});
+                if (this.player.trail.length > 10) this.player.trail.shift();
+
+                // Manejo de la invulnerabilidad
+                if (this.player.invulnerableTimer > 0) {
+                    this.player.invulnerableTimer -= deltaTime;
+                }
+
+                // --- REGENERACIÓN DE RECURSOS ---
+                let healthRegen = this.healthRegenRate;
+                let energyRegen = this.energyRegenRate;
+
+                // --- LÓGICA DEL CAMPO DE CURACIÓN (ESCUDO Q) ---
+                if (this.isHealingFieldActive) {
+                    this.healingFieldTimer -= deltaTime;
+                    this.healingFieldLocation.x = this.player.x;
+                    this.healingFieldLocation.y = this.player.y;
+
+                    if (this.healingFieldTimer <= 0) {
+                        this.isHealingFieldActive = false;
+                    } else {
+                        // Aumentar regeneración dentro del campo
+                        healthRegen += this.healingRegenBoost;
+                        energyRegen += this.energyRegenBoost;
+                    }
+                }
+
+                // Aplicar regeneración
+                this.energy = Math.min(this.maxEnergy, this.energy + energyRegen * deltaTime / 1000);
+                this.health = Math.min(this.maxHealth, this.health + healthRegen * deltaTime / 1000);
+
+                // --- Update gravity fields ---
+                for (let i = this.gravityFields.length - 1; i >= 0; i--) {
+                    const field = this.gravityFields[i];
+                    const age = performance.now() - field.createdAt;
+                    
+                    if (age > field.lifetime) {
+                        this.gravityFields.splice(i, 1);
+                        continue;
+                    }
+
+                    // Apply gravity to entities
+                    this.entities.forEach(entity => {
+                        const dist = Math.hypot(entity.x - field.x, entity.y - field.y);
+                        if (dist < field.radius) {
+                            const angle = Math.atan2(field.y - entity.y, field.x - entity.x);
+                            const force = field.strength * (1 - dist / field.radius);
+                            entity.x -= Math.cos(angle) * force;
+                            entity.y -= Math.sin(angle) * force;
+                        }
+                    });
+                }
+
+                // --- Update slices ---
+                for (let i = this.slices.length - 1; i >= 0; i--) {
+                    const slice = this.slices[i];
+                    const age = performance.now() - slice.createdAt;
+                    
+                    if (age > slice.lifetime) {
+                        this.slices.splice(i, 1);
+                        continue;
+                    }
+
+                    slice.x += Math.cos(slice.angle) * slice.speed;
+                    slice.y += Math.sin(slice.angle) * slice.speed;
+
+                    // Check collision with entities
+                    for (let j = this.entities.length - 1; j >= 0; j--) {
+                        const entity = this.entities[j];
+                        const dist = pointToLineDistance(entity.x, entity.y, 
+                            slice.x, slice.y, 
+                            slice.x + Math.cos(slice.angle) * slice.length,
+                            slice.y + Math.sin(slice.angle) * slice.length);
+                        
+                        if (dist < entity.radius + slice.width / 2) {
+                            entity.health--;
+                            this.sounds.enemyHit();
+                            
+                            if (entity.health <= 0) {
+                                this.score += entity.type === 'heavy' ? 50 : entity.type === 'fast' ? 30 : 20;
+                                
+                                // LÓGICA DE DROP MÚLTIPLE 
+                                let dropCount = 2; // Por defecto 2-3
+                                let dropType = 'energy';
+
+                                if (entity.type === 'square') {
+                                    dropCount = Math.floor(Math.random() * 4) + 2; // 2 a 5 Puntos de Vida
+                                    dropType = 'health';
+                                } else {
+                                    dropCount = Math.floor(Math.random() * 2) + 2; // 2 a 3 Puntos de Energía
+                                }
+                                
+                                for (let k = 0; k < dropCount; k++) {
+                                    const dx = (Math.random() - 0.5) * 15;
+                                    const dy = (Math.random() - 0.5) * 15;
+                                    this.spawnPickupParticle(entity.x + dx, entity.y + dy, dropType);
+                                }
+                                
+                                this.entities.splice(j, 1);
+                            }
+                        }
+                    }
+                }
+
+                // --- Update entities y COLISIÓN CON JUGADOR ---
+                for (let i = this.entities.length - 1; i >= 0; i--) {
+                    const entity = this.entities[i];
+                    
+                    // Repulsión del campo de curación (si está activo)
+                    if (this.isHealingFieldActive) {
+                        const distToHealingField = Math.hypot(entity.x - this.healingFieldLocation.x, entity.y - this.healingFieldLocation.y);
+                        if (distToHealingField < this.healingFieldRadius) {
+                            const angle = Math.atan2(entity.y - this.healingFieldLocation.y, entity.x - this.healingFieldLocation.x);
+                            const force = this.healingFieldRepulsionStrength * (1 - distToHealingField / this.healingFieldRadius);
+                            entity.x += Math.cos(angle) * force;
+                            entity.y += Math.sin(angle) * force;
+                        }
+                    }
+
+                    // Move towards player
+                    const angle = Math.atan2(this.player.y - entity.y, this.player.x - entity.x);
+                    // Uso de deltaTime / 16 (para sincronización con un target de 60fps)
+                    entity.x += Math.cos(angle) * entity.speed * deltaTime / 16;
+                    entity.y += Math.sin(angle) * entity.speed * deltaTime / 16;
+
+                    entity.trail.push({x: entity.x, y: entity.y});
+                    if (entity.trail.length > 8) entity.trail.shift();
+
+                    // Check collision with player
+                    const dist = Math.hypot(entity.x - this.player.x, entity.y - this.player.y);
+                    if (dist < entity.radius + this.player.radius) {
+                        this.takeDamage(10); // EL JUGADOR RECIBE DAÑO
+                        
+                        // Impulso para separar la entidad del jugador (knockback)
+                        const angle = Math.atan2(entity.y - this.player.y, entity.x - this.player.x);
+                        entity.x += Math.cos(angle) * 25; 
+                        entity.y += Math.sin(angle) * 25;
+                    }
+                }
+
+                // --- Update pickup particles ---
+                for (let i = this.pickupParticles.length - 1; i >= 0; i--) {
+                    const particle = this.pickupParticles[i];
+                    const age = performance.now() - particle.createdAt;
+                    
+                    if (age > particle.lifetime) {
+                        this.pickupParticles.splice(i, 1);
+                        continue;
+                    }
+
+                    // Move towards player (atracción)
+                    const dist = Math.hypot(particle.x - this.player.x, particle.y - this.player.y);
+                    if (dist < 150) {
+                        const angle = Math.atan2(this.player.y - particle.y, this.player.x - particle.x);
+                        particle.x += Math.cos(angle) * 3;
+                        particle.y += Math.sin(angle) * 3;
+                    }
+
+                    // Collect particle
+                    if (dist < particle.radius + this.player.radius && !particle.collected) {
+                        particle.collected = true;
+                        
+                        if (particle.type === 'health') { 
+                            this.health = Math.min(this.maxHealth, this.health + particle.value);
+                        } else { 
+                            this.energy = Math.min(this.maxEnergy, this.energy + particle.value);
+                        }
+                        
+                        this.score += particle.value;
+                        this.sounds.collect();
+                        this.pickupParticles.splice(i, 1);
+                    }
+                }
+
+                // --- Wave management (LÓGICA DE NIVEL Y OLEADAS) ---
+                this.waveTimer += deltaTime;
+                if (this.waveTimer > this.waveInterval) {
+                    this.waveTimer = 0;
+                    if (this.entities.length === 0) {
+                        this.level++;
+                        this.checkLevelUp();
+                        if (this.gameMode === 'hard' && this.waveInterval > 1000) {
+                             this.waveInterval -= 100; // Acelerar oleadas en difícil
+                        }
+                    }
+                }
+
+                // Spawn random particles (solo si no estamos en creativo)
+                if (this.gameMode !== 'creative') {
+                    this.particleSpawnTimer += deltaTime;
+                    if (this.particleSpawnTimer > 2000 && this.pickupParticles.length < 3 + this.level) {
+                        this.particleSpawnTimer = 0;
+                        if (Math.random() < 0.3) {
+                            this.spawnPickupParticle(
+                                Math.random() * this.canvas.width,
+                                Math.random() * this.canvas.height,
+                                Math.random() < 0.8 ? 'energy' : 'health' 
+                            );
+                        }
+                    }
+                }
+
+
+                this.updateUI();
+            }
+
+            render() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw background grid
+                this.ctx.strokeStyle = 'rgba(76, 201, 240, 0.1)';
+                this.ctx.lineWidth = 1;
+                for (let x = 0; x < this.canvas.width; x += 40) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                for (let y = 0; y < this.canvas.height; y += 40) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+
+                // Draw gravity fields
+                this.gravityFields.forEach(field => {
+                    const age = performance.now() - field.createdAt;
+                    const progress = age / field.lifetime;
+                    const alpha = 0.3 * (1 - progress);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(field.x, field.y, field.radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(76, 201, 240, ${alpha})`;
+                    this.ctx.fill();
+                    
+                    this.ctx.strokeStyle = `rgba(76, 201, 240, ${alpha * 2})`;
+                    this.ctx.setLineDash([5, 5]);
+                    this.ctx.stroke();
+                    this.ctx.setLineDash([]);
+                });
+
+                // Draw Healing Field (ESCUDO Q)
+                if (this.isHealingFieldActive) {
+                    const progress = this.healingFieldTimer / this.healingFieldDuration;
+                    const alpha = 0.5 * progress;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.healingFieldLocation.x, this.healingFieldLocation.y, this.healingFieldRadius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = `rgba(180, 255, 180, ${alpha})`; // Verde suave
+                    this.ctx.fill();
+                    
+                    this.ctx.strokeStyle = `rgba(180, 255, 180, ${alpha * 2})`;
+                    this.ctx.setLineDash([10, 5]);
+                    this.ctx.stroke();
+                    this.ctx.setLineDash([]);
+                }
+
+                // Draw slices 
+                this.slices.forEach(slice => {
+                    const age = performance.now() - slice.createdAt;
+                    const progress = age / slice.lifetime;
+                    const alpha = 0.8 * (1 - progress);
+                    
+                    this.ctx.save();
+                    this.ctx.translate(slice.x, slice.y);
+                    this.ctx.rotate(slice.angle);
+                    
+                    this.ctx.fillStyle = `rgba(247, 37, 133, ${alpha})`;
+                    this.ctx.fillRect(0, -slice.width / 2, slice.length, slice.width);
+                    
+                    this.ctx.restore();
+                });
+
+                // Draw pickup particles 
+                this.pickupParticles.forEach(particle => {
+                    const age = performance.now() - particle.createdAt;
+                    const progress = age / particle.lifetime;
+                    const scale = 1 + Math.sin(progress * Math.PI * 8) * 0.2;
+                    
+                    this.ctx.save();
+                    this.ctx.translate(particle.x, particle.y);
+                    this.ctx.scale(scale, scale);
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(0, 0, particle.radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = particle.color;
+                    this.ctx.fill();
+                    
+                    this.ctx.strokeStyle = 'white';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                    
+                    this.ctx.restore();
+                });
+
+                // Draw entities
+                this.entities.forEach(entity => {
+                    // Draw trail
+                    entity.trail.forEach((point, index) => {
+                        const alpha = index / entity.trail.length;
+                        this.ctx.beginPath();
+                        this.ctx.arc(point.x, point.y, entity.radius * alpha, 0, Math.PI * 2);
+                        this.ctx.fillStyle = `${entity.color}${Math.floor(alpha * 16).toString(16)}`;
+                        this.ctx.fill();
+                    });
+
+                    this.ctx.fillStyle = entity.color;
+                    this.ctx.strokeStyle = 'white';
+                    this.ctx.lineWidth = 2;
+
+                    // LÓGICA DE DIBUJO PARA EL CUADRADO
+                    if (entity.type === 'square') {
+                        const size = entity.radius * 2;
+                        this.ctx.save();
+                        this.ctx.translate(entity.x, entity.y);
+                        this.ctx.rotate(performance.now() / 1000 * 0.5); 
+                        this.ctx.fillRect(-entity.radius, -entity.radius, size, size);
+                        this.ctx.strokeRect(-entity.radius, -entity.radius, size, size);
+                        this.ctx.restore();
+                    } else {
+                        // Dibujar entidad circular (normal, fast, heavy)
+                        this.ctx.beginPath();
+                        this.ctx.arc(entity.x, entity.y, entity.radius, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        this.ctx.stroke();
+                    }
+
+                    // Health bar
+                    const healthPercent = entity.health / entity.maxHealth;
+                    this.ctx.fillStyle = '#ff0000';
+                    this.ctx.fillRect(entity.x - entity.radius, entity.y - entity.radius - 10, entity.radius * 2 * healthPercent, 3);
+                });
+
+                // Draw player
+                // Parpadeo si es invulnerable temporalmente
+                const isFlashing = this.player.invulnerableTimer > 0 && Math.floor(this.player.invulnerableTimer / 100) % 2 === 0;
+
+                if (!isFlashing || this.isInvulnerableManual) {
+                    // Draw player trail
+                    this.player.trail.forEach((point, index) => {
+                        const alpha = index / this.player.trail.length;
+                        this.ctx.beginPath();
+                        this.ctx.arc(point.x, point.y, this.player.radius * alpha, 0, Math.PI * 2);
+                        this.ctx.fillStyle = `rgba(76, 201, 240, ${alpha})`;
+                        this.ctx.fill();
+                    });
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.player.x, this.player.y, this.player.radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = this.isInvulnerableManual ? '#b4ffb4' : this.player.color;
+                    this.ctx.fill();
+                    
+                    this.ctx.strokeStyle = 'white';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.stroke();
+                }
+
+                // Draw energy bar
+                const energyPercent = this.energy / this.maxEnergy;
+                this.ctx.fillStyle = '#4cc9f0';
+                this.ctx.fillRect(20, this.canvas.height - 30, 200 * energyPercent, 10);
+                this.ctx.strokeStyle = 'white';
+                this.ctx.strokeRect(20, this.canvas.height - 30, 200, 10);
+
+                // Draw health bar
+                const healthPercent = this.health / this.maxHealth;
+                this.ctx.fillStyle = healthPercent > 0.3 ? '#b4ffb4' : '#ff0000';
+                this.ctx.fillRect(230, this.canvas.height - 30, 200 * healthPercent, 10);
+                this.ctx.strokeStyle = 'white';
+                this.ctx.strokeRect(230, this.canvas.height - 30, 200, 10);
+
+            }
+
+            gameLoop() {
+                const now = performance.now();
+                this.deltaTime = now - this.lastTime;
+                this.lastTime = now;
+
+                if (this.gameState === 'playing' || this.gameState === 'levelup') {
+                    if (this.gameState === 'playing') {
+                         this.update(this.deltaTime);
+                    }
+                    this.render();
+                    
+                    // LÓGICA DE PAUSA CORREGIDA: Solo solicita el siguiente frame si el juego está activo.
+                    this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+                } 
+            }
+        }
+
+        // Utility function for line distance calculation
+        function pointToLineDistance(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+
+            const dot = A * C + B * D;
+            const len_sq = C * C + D * D;
+            let param = -1;
+            
+            if (len_sq !== 0) {
+                param = dot / len_sq;
+            }
+
+            let xx, yy;
+
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+
+            return Math.hypot(px - xx, py - yy);
+        }
+
+        // Initialize game when page loads
+        let game;
+        window.addEventListener('DOMContentLoaded', () => {
+            game = new Game();
+        });
+    </script>
+</body>
+</html>
